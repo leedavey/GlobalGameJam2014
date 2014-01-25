@@ -46,11 +46,19 @@ public class CanvasView extends View {
 		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
 //		drawPopupText(canvas);
 //		gameScreen.drawPassable(canvas, scaleX, scaleY);
+		drawDebug(canvas);
 		// draw text popup
 		this.invalidate();
 	}
-
 	
+	private void drawDebug(Canvas canvas) {
+		Paint paint = new Paint();
+		paint.setColor(Color.WHITE);
+		paint.setTextSize(30);
+		String text = "pos:"+player.getPosition().x+","+player.getPosition().y;		
+		canvas.drawText(text, 500, 30, paint);
+	}
+
 	private void drawPopupText(Canvas canvas) {
 		// every draw needs to be scaled
 		Paint paint1 = new Paint();

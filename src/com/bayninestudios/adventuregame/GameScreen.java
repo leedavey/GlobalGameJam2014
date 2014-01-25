@@ -21,6 +21,7 @@ public class GameScreen {
 	private int currentBackground = 0;
 
 	public GameScreen(Context context) {
+		loadLevel(0);
 		Random rand = new Random();
 		gameObjectBmps = new ArrayList<Bitmap>();
 
@@ -44,13 +45,12 @@ public class GameScreen {
 		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 7
                 R.drawable.background2, opts));
 		
-		
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(new GameObject(80,17,2));
 		gameObjects.add(new GameObject(20,20,2));
-		gameObjects.add(new GameObject(70,25,1));
+		gameObjects.add(new GameObject(60,25,1));
 		gameObjects.add(new GameObject(10,25,2));
-		gameObjects.add(new GameObject(90,30,1));
+		gameObjects.add(new GameObject(58,30,1));
 		// TODO: random grass, need to add in order of Y
 		for (int i = 0; i < 5; i++) {
 			int x = rand.nextInt(100);
@@ -60,9 +60,18 @@ public class GameScreen {
 		}
 //		gameObjects.add(new GameObject(40,45,6));
 		gameObjects.add(new GameObject(45,35,5));
-		setPassableSquare(35, 32, 46, 36);
-		setPassableSquare(0, 53, 100, 60);
-		
+		// stump
+		setPassableSquare(39, 32, 53, 36);
+		// river
+		setPassableSquare(0, 53, 100, 54);
+		// Left trees
+		setPassableSquare(0, 25, 16, 26);
+		setPassableSquare(16, 20, 17, 26);
+		setPassableSquare(16, 20, 25, 21);
+		setPassableSquare(25, 0, 26, 21);
+		// right trees
+		setPassableSquare(74, 0, 75, 18);
+		setPassableSquare(74, 17, 100, 18);
 	}
 
 	private void setPassableSquare(int x1, int y1, int x2, int y2) {
@@ -117,6 +126,9 @@ public class GameScreen {
 	public void setBackground(int i) {
 		currentBackground = 7;
 		gameObjects = new ArrayList<GameObject>();
+	}
+
+	private void loadLevel(int i) {
 	}
 
 }
