@@ -22,7 +22,7 @@ public class Player {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inScaled = false;
 		playerBmp = BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.gb_walk, opts);
+                R.drawable.gb_walk2, opts);
 		moveTo = new Vector2(20,40);
 		characterPos = new Vector2(200,400);
 	}
@@ -58,6 +58,10 @@ public class Player {
 	}
 
 	public void update(GameScreen gameScreen) {
+		if (characterPos.x < 90) {
+			gameScreen.setBackground(1);
+			setCharacterPosition(85, characterPos.y/10);
+		}
 		// move player if needed
 		if ((characterPos.x != moveTo.x*10) || (characterPos.y != moveTo.y*10)) {
 			float dirX = moveTo.x*10f-characterPos.x;
@@ -101,6 +105,15 @@ public class Player {
 			}
 		}
 			
+	}
+
+	// using game coords, set the character position and
+	// the move to coords
+	private void setCharacterPosition(int x, int y) {
+		moveTo.x = x;
+		moveTo.y = y;		
+		characterPos.x = moveTo.x*10;
+		characterPos.y = moveTo.y*10;
 	}
 
 	private void stopMovement() {

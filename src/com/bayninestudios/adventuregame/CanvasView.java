@@ -50,6 +50,7 @@ public class CanvasView extends View {
 		this.invalidate();
 	}
 
+	
 	private void drawPopupText(Canvas canvas) {
 		// every draw needs to be scaled
 		Paint paint1 = new Paint();

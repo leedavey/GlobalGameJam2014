@@ -18,6 +18,7 @@ public class GameScreen {
 	private int passable[][] = new int[100][64];
 	private ArrayList<Bitmap> gameObjectBmps;
 	private ArrayList<GameObject> gameObjects;
+	private int currentBackground = 0;
 
 	public GameScreen(Context context) {
 		Random rand = new Random();
@@ -26,38 +27,41 @@ public class GameScreen {
 		// ask the bitmap factory not to scale the loaded bitmaps
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inScaled = false;
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.adventurebackground, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 0
+                R.drawable.background1, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 1
                 R.drawable.tree1, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 2
                 R.drawable.tree2, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 3
                 R.drawable.grass1, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 4
                 R.drawable.grass2, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 5
                 R.drawable.trunk1, opts));
-		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(),
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 6
                 R.drawable.rock1, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 7
+                R.drawable.background2, opts));
 		
 		
 		gameObjects = new ArrayList<GameObject>();
-		gameObjects.add(new GameObject(80,27,2));
-		gameObjects.add(new GameObject(20,30,2));
-		gameObjects.add(new GameObject(70,35,1));
-		gameObjects.add(new GameObject(10,35,2));
-		gameObjects.add(new GameObject(90,40,1));
+		gameObjects.add(new GameObject(80,17,2));
+		gameObjects.add(new GameObject(20,20,2));
+		gameObjects.add(new GameObject(70,25,1));
+		gameObjects.add(new GameObject(10,25,2));
+		gameObjects.add(new GameObject(90,30,1));
 		// TODO: random grass, need to add in order of Y
 		for (int i = 0; i < 5; i++) {
 			int x = rand.nextInt(100);
-			int y = rand.nextInt(20)+40;
+			int y = rand.nextInt(20)+30;
 			int b = rand.nextInt(2)+3;
 			gameObjects.add(new GameObject(x,y,b));
 		}
 //		gameObjects.add(new GameObject(40,45,6));
-		gameObjects.add(new GameObject(40,45,5));
-		setPassableSquare(35, 42, 46, 46);
+		gameObjects.add(new GameObject(45,35,5));
+		setPassableSquare(35, 32, 46, 36);
+		setPassableSquare(0, 53, 100, 60);
 		
 	}
 
@@ -70,7 +74,7 @@ public class GameScreen {
 	}
 	
 	public void drawBackground(Canvas canvas, float scaleX, float scaleY) {
-		canvas.drawBitmap(gameObjectBmps.get(0),
+		canvas.drawBitmap(gameObjectBmps.get(currentBackground),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y),
 				new Rect(0,0,(int)(GAME_SIZE_X*scaleX),(int)(GAME_SIZE_Y*scaleY)), null);
 	}
@@ -108,6 +112,11 @@ public class GameScreen {
 	
 	public int getTileType(int x, int y) {
 		return passable[x][y];
+	}
+
+	public void setBackground(int i) {
+		currentBackground = 7;
+		gameObjects = new ArrayList<GameObject>();
 	}
 
 }
