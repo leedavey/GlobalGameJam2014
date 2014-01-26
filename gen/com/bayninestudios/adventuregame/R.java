@@ -24,18 +24,24 @@ public final class R {
         public static final int adventurebackground=0x7f020000;
         public static final int background1=0x7f020001;
         public static final int background2=0x7f020002;
-        public static final int cave1=0x7f020003;
-        public static final int flower1=0x7f020004;
-        public static final int gb_walk=0x7f020005;
-        public static final int gb_walk1=0x7f020006;
-        public static final int gb_walk2=0x7f020007;
-        public static final int grass1=0x7f020008;
-        public static final int grass2=0x7f020009;
-        public static final int ic_launcher=0x7f02000a;
-        public static final int rock1=0x7f02000b;
-        public static final int tree1=0x7f02000c;
-        public static final int tree2=0x7f02000d;
-        public static final int trunk1=0x7f02000e;
+        public static final int background3=0x7f020003;
+        public static final int bush1=0x7f020004;
+        public static final int cave1=0x7f020005;
+        public static final int flower1=0x7f020006;
+        public static final int gb_walk=0x7f020007;
+        public static final int gb_walk1=0x7f020008;
+        public static final int gb_walk2=0x7f020009;
+        public static final int grass1=0x7f02000a;
+        public static final int grass2=0x7f02000b;
+        public static final int ic_launcher=0x7f02000c;
+        public static final int mushroom1=0x7f02000d;
+        public static final int mushroom2=0x7f02000e;
+        public static final int rock1=0x7f02000f;
+        public static final int torch1=0x7f020010;
+        public static final int tree1=0x7f020011;
+        public static final int tree2=0x7f020012;
+        public static final int trunk1=0x7f020013;
+        public static final int waterfall1=0x7f020014;
     }
     public static final class id {
         public static final int action_settings=0x7f070000;

@@ -23,6 +23,7 @@ public class CanvasView extends View {
 
 	private Player player;
 	private GameScreen gameScreen;
+	private boolean showPassable = false;
 	
 	public CanvasView(Context context) {
 		super(context);
@@ -40,17 +41,27 @@ public class CanvasView extends View {
 		scaleY = screen_size_y/(GAME_SIZE_Y*1f);
 
 		gameScreen.drawBackground(canvas, scaleX, scaleY);
+		Paint paint = new Paint();
+		paint.setColor(Color.WHITE);
 		player.update(gameScreen);
 		gameScreen.drawObjects(canvas, true, scaleX, scaleY, player.getPosition().y/10);
 		player.drawCharacter(canvas, scaleX, scaleY);
 		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
+		drawMenu(canvas);
 //		drawPopupText(canvas);
-//		gameScreen.drawPassable(canvas, scaleX, scaleY);
+		if (showPassable)
+			gameScreen.drawPassable(canvas, scaleX, scaleY);
 		drawDebug(canvas);
 		// draw text popup
 		this.invalidate();
 	}
-	
+
+	private void drawMenu(Canvas canvas) {
+		Paint paint = new Paint();
+		paint.setColor(Color.GRAY);
+		canvas.drawRoundRect(new RectF(0f,0f,50f*scaleX,50f*scaleY), 10f, 10f, paint);
+	}
+
 	private void drawDebug(Canvas canvas) {
 		Paint paint = new Paint();
 		paint.setColor(Color.WHITE);
@@ -81,8 +92,10 @@ public class CanvasView extends View {
 		    // calculate tile touched
 		    int tileX = (int)(x / scaleX)/10;
 		    int tileY = (int)(y / scaleY)/10;
-		    // only move if passable
-		    player.setMoveTo(tileX, tileY);
+		    if ((tileX < 5) && (tileY < 5))
+		    	showPassable = !showPassable;
+		    else
+			    player.setMoveTo(tileX, tileY);
 	    }
 	    return true;
 	}

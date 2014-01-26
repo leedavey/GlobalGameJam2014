@@ -58,9 +58,41 @@ public class Player {
 	}
 
 	public void update(GameScreen gameScreen) {
-		if (characterPos.x < 90) {
-			gameScreen.setBackground(1);
-			setCharacterPosition(85, characterPos.y/10);
+		if (characterPos.x < gameScreen.boundW) {
+			if (gameScreen.nextW != 0) {
+				gameScreen.setScreen(gameScreen.nextW);
+				setCharacterPosition(90, characterPos.y/10);
+			} else {
+				characterPos.x = gameScreen.boundW;
+				stopMovement();
+			}
+		}
+		if (characterPos.x > gameScreen.boundE) {
+			if (gameScreen.nextE != 0) {
+				gameScreen.setScreen(gameScreen.nextE);
+				setCharacterPosition(10, characterPos.y/10);
+			} else {
+				characterPos.x = gameScreen.boundE;
+				stopMovement();
+			}
+		}
+		if (characterPos.y > gameScreen.boundS) {
+			if (gameScreen.nextS != 0) {
+				gameScreen.setScreen(gameScreen.nextS);
+				setCharacterPosition(characterPos.y/10, 10);
+			} else {
+				characterPos.y = gameScreen.boundS;
+				stopMovement();
+			}
+		}
+		if (characterPos.y < gameScreen.boundN) {
+			if (gameScreen.nextN != 0) {
+				gameScreen.setScreen(gameScreen.nextN);
+				setCharacterPosition(characterPos.x/10, 50);
+			} else {
+				characterPos.y = gameScreen.boundN;
+				stopMovement();
+			}
 		}
 		// move player if needed
 		if ((characterPos.x != moveTo.x*10) || (characterPos.y != moveTo.y*10)) {

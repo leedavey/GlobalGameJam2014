@@ -12,17 +12,30 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class GameScreen {
+	static public final int SCN_STUMP = 1;
+	static public final int SCN_WATERFALL = 2;
+	static public final int SCN_CAVE_ENTRANCE = 3;
+
 	private final int GAME_SIZE_X = 1000;
 	private final int GAME_SIZE_Y = 600;
 
 	private int passable[][] = new int[100][64];
 	private ArrayList<Bitmap> gameObjectBmps;
 	private ArrayList<GameObject> gameObjects;
-	private int currentBackground = 0;
+//	private SparkleEffect sparkle;
+	private int currentBackground;
+	private int currentScreen = GameScreen.SCN_STUMP;
+	
+	public int boundW;
+	public int nextW;
+	public int boundE;
+	public int nextE;
+	public int boundN;
+	public int nextN;
+	public int boundS;
+	public int nextS;
 
 	public GameScreen(Context context) {
-		loadLevel(0);
-		Random rand = new Random();
 		gameObjectBmps = new ArrayList<Bitmap>();
 
 		// ask the bitmap factory not to scale the loaded bitmaps
@@ -44,34 +57,14 @@ public class GameScreen {
                 R.drawable.rock1, opts));
 		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 7
                 R.drawable.background2, opts));
-		
-		gameObjects = new ArrayList<GameObject>();
-		gameObjects.add(new GameObject(80,17,2));
-		gameObjects.add(new GameObject(20,20,2));
-		gameObjects.add(new GameObject(60,25,1));
-		gameObjects.add(new GameObject(10,25,2));
-		gameObjects.add(new GameObject(58,30,1));
-		// TODO: random grass, need to add in order of Y
-		for (int i = 0; i < 5; i++) {
-			int x = rand.nextInt(100);
-			int y = rand.nextInt(20)+30;
-			int b = rand.nextInt(2)+3;
-			gameObjects.add(new GameObject(x,y,b));
-		}
-//		gameObjects.add(new GameObject(40,45,6));
-		gameObjects.add(new GameObject(45,35,5));
-		// stump
-		setPassableSquare(39, 32, 53, 36);
-		// river
-		setPassableSquare(0, 53, 100, 54);
-		// Left trees
-		setPassableSquare(0, 25, 16, 26);
-		setPassableSquare(16, 20, 17, 26);
-		setPassableSquare(16, 20, 25, 21);
-		setPassableSquare(25, 0, 26, 21);
-		// right trees
-		setPassableSquare(74, 0, 75, 18);
-		setPassableSquare(74, 17, 100, 18);
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 8
+                R.drawable.bush1, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 9
+                R.drawable.background3, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 10
+                R.drawable.waterfall1, opts));
+
+		setScreen(currentScreen);
 	}
 
 	private void setPassableSquare(int x1, int y1, int x2, int y2) {
@@ -123,12 +116,101 @@ public class GameScreen {
 		return passable[x][y];
 	}
 
-	public void setBackground(int i) {
-		currentBackground = 7;
-		gameObjects = new ArrayList<GameObject>();
+	public int getScreenId() {
+		return currentScreen;
 	}
 
-	private void loadLevel(int i) {
+	public void setScreen(int screen) {
+		Random rand = new Random();
+		if (screen == GameScreen.SCN_STUMP) {
+			currentBackground = 0;
+			gameObjects = new ArrayList<GameObject>();
+			gameObjects.add(new GameObject(78,13,8));
+			gameObjects.add(new GameObject(90,16,6));
+			gameObjects.add(new GameObject(95,17,8));
+			gameObjects.add(new GameObject(80,17,2));
+			gameObjects.add(new GameObject(20,15,2));
+			gameObjects.add(new GameObject(5,19,8));
+			gameObjects.add(new GameObject(15,18,8));
+			gameObjects.add(new GameObject(60,25,1));
+			gameObjects.add(new GameObject(10,20,2));
+			gameObjects.add(new GameObject(85,45,1));
+			// TODO: random grass, need to add in order of Y
+			for (int i = 0; i < 5; i++) {
+				int x = rand.nextInt(100);
+				int y = rand.nextInt(20)+30;
+				int b = rand.nextInt(2)+3;
+				gameObjects.add(new GameObject(x,y,b));
+			}
+			gameObjects.add(new GameObject(45,35,5));
+
+			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
+			// stump
+			setPassableSquare(39, 32, 53, 36);
+			// river
+//			setPassableSquare(0, RIVER_TOP, 100, RIVER_TOP+1);
+			// Left trees
+			setPassableSquare(0, 20, 16, 21);
+			setPassableSquare(16, 15, 17, 21);
+			setPassableSquare(16, 15, 25, 16);
+			setPassableSquare(25, 0, 26, 16);
+			// right trees
+			setPassableSquare(74, 0, 75, 18);
+			setPassableSquare(74, 17, 100, 18);
+			
+			setBounds(90, 910, 90, 530);
+			setNextScene(GameScreen.SCN_WATERFALL,0,0,0);
+			
+//			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.WHITE, 1);
+		}
+		if (screen == GameScreen.SCN_WATERFALL) {
+			currentBackground = 7;
+			gameObjects = new ArrayList<GameObject>();
+			gameObjects.add(new GameObject(61,21,6));
+			gameObjects.add(new GameObject(29,50,10));
+
+			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
+			// top cave entrance
+			setPassableSquare(28, 18, 69, 19);
+			setPassableSquare(58, 19, 67, 20);
+			setPassableSquare(59, 20, 66, 21);
+			setPassableSquare(76, 18, 100, 19);
+
+			setPassableSquare(27, 18, 28, 25);
+			setPassableSquare(26, 25, 27, 30);
+			setPassableSquare(25, 30, 26, 35);
+			setPassableSquare(24, 35, 25, 40);
+			// river
+//			setPassableSquare(50, RIVER_TOP, 100, RIVER_TOP+1);
+			setPassableSquare(24, 40, 54, 41);
+			setPassableSquare(53, 41, 54, 53);
+
+			setBounds(90, 910, 190, 530);
+			setNextScene(0,GameScreen.SCN_STUMP,GameScreen.SCN_CAVE_ENTRANCE,0);
+
+//			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.BLUE, 0);
+		}
+		if (screen == GameScreen.SCN_CAVE_ENTRANCE) {
+			currentBackground = 9;
+			gameObjects = new ArrayList<GameObject>();
+
+			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
+			setBounds(90, 910, 190, 570);
+			setNextScene(0,0,0,GameScreen.SCN_WATERFALL);
+		}
+	}
+	
+	private void setBounds(int w, int e, int n, int s) {
+		this.boundW = w;
+		this.boundE = e;
+		this.boundN = n;
+		this.boundS = s;
 	}
 
+	private void setNextScene(int w, int e, int n, int s) {
+		this.nextW = w;
+		this.nextE = e;
+		this.nextN = n;
+		this.nextS = s;
+	}
 }
