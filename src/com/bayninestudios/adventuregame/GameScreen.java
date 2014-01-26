@@ -10,11 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class GameScreen {
-	static public final int SCN_STUMP = 1;
+	static public final int SCN_FIELD = 1;
 	static public final int SCN_WATERFALL = 2;
 	static public final int SCN_CAVE_ENTRANCE = 3;
+	static public final int SCN_STUMP = 4;
 
 	private final int GAME_SIZE_X = 1000;
 	private final int GAME_SIZE_Y = 600;
@@ -24,8 +26,9 @@ public class GameScreen {
 	private ArrayList<GameObject> gameObjects;
 //	private SparkleEffect sparkle;
 	private int currentBackground;
-	private int currentScreen = GameScreen.SCN_STUMP;
+	private int currentScreen = GameScreen.SCN_FIELD;
 	
+	// these need refactoring, don't know how yet
 	public int boundW;
 	public int nextW;
 	public int boundE;
@@ -34,6 +37,8 @@ public class GameScreen {
 	public int nextN;
 	public int boundS;
 	public int nextS;
+	
+	public boolean endGame = false;
 
 	public GameScreen(Context context) {
 		gameObjectBmps = new ArrayList<Bitmap>();
@@ -63,6 +68,12 @@ public class GameScreen {
                 R.drawable.background3, opts));
 		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 10
                 R.drawable.waterfall1, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 11
+                R.drawable.background4, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 12
+                R.drawable.flower1, opts));
+		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 13
+                R.drawable.chest, opts));
 
 		setScreen(currentScreen);
 	}
@@ -99,16 +110,18 @@ public class GameScreen {
 
 	public void drawObjects(Canvas canvas, boolean background, float scaleX, float scaleY, int playerY) {
 		for (GameObject obj:gameObjects) {
-			if (((obj.position.y < playerY) && background) ||
-				    ((obj.position.y >= playerY) && !background)) {
-					Bitmap bmp = gameObjectBmps.get(obj.objectBitmap);
-					canvas.drawBitmap(bmp,
-							new Rect(0,0,bmp.getWidth(), bmp.getHeight()),
-							new Rect((int)(obj.position.x*10*scaleX-((bmp.getWidth()/2)*scaleX)),
-									(int)((obj.position.y*10-bmp.getHeight())*scaleY),
-									(int)(obj.position.x*10*scaleX+((bmp.getWidth()/2)*scaleX)),
-									(int)(obj.position.y*10*scaleY)), null);			
+			if (obj.visible) {
+				if (((obj.position.y < playerY) && background) ||
+					    ((obj.position.y >= playerY) && !background)) {
+						Bitmap bmp = gameObjectBmps.get(obj.objectBitmap);
+						canvas.drawBitmap(bmp,
+								new Rect(0,0,bmp.getWidth(), bmp.getHeight()),
+								new Rect((int)(obj.position.x*10*scaleX-((bmp.getWidth()/2)*scaleX)),
+										(int)((obj.position.y*10-bmp.getHeight())*scaleY),
+										(int)(obj.position.x*10*scaleX+((bmp.getWidth()/2)*scaleX)),
+										(int)(obj.position.y*10*scaleY)), null);			
 				}
+			}
 		}
 	}
 	
@@ -122,7 +135,7 @@ public class GameScreen {
 
 	public void setScreen(int screen) {
 		Random rand = new Random();
-		if (screen == GameScreen.SCN_STUMP) {
+		if (screen == GameScreen.SCN_FIELD) {
 			currentBackground = 0;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(78,13,8));
@@ -142,11 +155,13 @@ public class GameScreen {
 				int b = rand.nextInt(2)+3;
 				gameObjects.add(new GameObject(x,y,b));
 			}
-			gameObjects.add(new GameObject(45,35,5));
+			for (int i = 0; i < 20; i++) {
+				int x = rand.nextInt(60)+20;
+				int y = rand.nextInt(30)+20;
+				gameObjects.add(new GameObject(x,y,12,false,false,0));
+			}
 
 			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
-			// stump
-			setPassableSquare(39, 32, 53, 36);
 			// river
 //			setPassableSquare(0, RIVER_TOP, 100, RIVER_TOP+1);
 			// Left trees
@@ -159,15 +174,14 @@ public class GameScreen {
 			setPassableSquare(74, 17, 100, 18);
 			
 			setBounds(90, 910, 90, 530);
-			setNextScene(GameScreen.SCN_WATERFALL,0,0,0);
+			setNextScene(GameScreen.SCN_WATERFALL,GameScreen.SCN_STUMP,0,0);
 			
 //			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.WHITE, 1);
-		}
-		if (screen == GameScreen.SCN_WATERFALL) {
+		} else if (screen == GameScreen.SCN_WATERFALL) {
 			currentBackground = 7;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(61,21,6));
-			gameObjects.add(new GameObject(29,50,10));
+			gameObjects.add(new GameObject(29,50,10,false,false,0));
 
 			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
 			// top cave entrance
@@ -186,20 +200,70 @@ public class GameScreen {
 			setPassableSquare(53, 41, 54, 53);
 
 			setBounds(90, 910, 190, 530);
-			setNextScene(0,GameScreen.SCN_STUMP,GameScreen.SCN_CAVE_ENTRANCE,0);
+			setNextScene(0,GameScreen.SCN_FIELD,GameScreen.SCN_CAVE_ENTRANCE,0);
 
 //			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.BLUE, 0);
-		}
-		if (screen == GameScreen.SCN_CAVE_ENTRANCE) {
+		} else if (screen == GameScreen.SCN_CAVE_ENTRANCE) {
 			currentBackground = 9;
 			gameObjects = new ArrayList<GameObject>();
+			gameObjects.add(new GameObject(63,28,13,true,false,2));
 
 			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
-			setBounds(90, 910, 190, 570);
+			setPassableSteps(14, 42, 53, false);
+			setPassableSquare(40, 27, 78, 28);
+			setPassableSquare(40, 27, 78, 28);
+			setPassableSquare(60, 28, 70, 29);
+			setPassableSteps(75, 88, 29, true);
+			setPassableSquare(87,42,88,44);
+			setPassableSteps(87, 96, 45, true);
+
+
+			// bottom
+			setPassableSquare(0, 54, 53, 55);
+			setPassableSquare(62, 54, 100, 55);
+
+			setPassableSquare(52, 54, 53, 60);
+			setPassableSquare(62, 54, 63, 60);
+
+			setBounds(90, 910, 190, 550);
 			setNextScene(0,0,0,GameScreen.SCN_WATERFALL);
+			
+		} else if (screen == GameScreen.SCN_STUMP) {
+			Log.d("log","in here");
+			currentBackground = 11;
+			gameObjects = new ArrayList<GameObject>();
+			gameObjects.add(new GameObject(45,35,5,true,true,1));
+
+			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
+			// stump
+			setPassableSquare(39, 32, 53, 36);
+
+			setPassableSquare(69, 16, 70, 23);
+			setPassableSquare(70, 23, 71, 28);
+			setPassableSquare(71, 28, 72, 33);
+			setPassableSquare(72, 33, 73, 37);
+			setPassableSquare(73, 37, 75, 38);
+			setPassableSquare(74, 37, 75, 42);
+			setPassableSquare(75, 42, 76, 45);
+			setPassableSquare(76, 44, 77, 47);
+			setPassableSquare(77, 46, 78, 56);
+
+			setBounds(90, 910, 190, 570);
+			setNextScene(GameScreen.SCN_FIELD,0,0,0);
 		}
 	}
 	
+	private void setPassableSteps(int x1, int x2, int y, boolean invert) {
+		for (int x = x1; x < x2; x++) {
+			passable[x][y] = 1;
+			passable[x][y-1] = 1;
+			if (invert)
+				y++;
+			else
+				y--;
+		}
+	}
+
 	private void setBounds(int w, int e, int n, int s) {
 		this.boundW = w;
 		this.boundE = e;
@@ -212,5 +276,53 @@ public class GameScreen {
 		this.nextE = e;
 		this.nextN = n;
 		this.nextS = s;
+	}
+
+	public int interactCheck(int x, int y, Vector2 playerPos) {
+		int returnVal = 0;
+		for (GameObject obj:gameObjects) {
+			if ((obj.visible) && (obj.interact)) {
+				// all these calculations should be in FINE game world coords
+				// did the player touch the object?
+				Vector2 pos = obj.position;
+				Bitmap bmp = gameObjectBmps.get(obj.objectBitmap);
+				int x1 = (pos.x*10)-(bmp.getWidth()/2);
+				int x2 = (pos.x*10)+(bmp.getWidth()/2);
+				int y1 = (pos.y*10)-(bmp.getHeight());
+				int y2 = (pos.y*10);
+				if ((x > x1)&&(x<x2)&&(y>y1)&&(y<y2)) {
+					// and are they close enough?
+					int diffX = (pos.x*10)-playerPos.x;
+					int diffY = (pos.y*10)-playerPos.y;
+					float distance = (float)(Math.sqrt((double)(diffX*diffX)+(diffY*diffY)));
+					if (distance < 75f)
+						returnVal = obj.interactID;
+				}
+				
+			}
+		}
+		return returnVal;
+	}
+
+	public void playerInteract(int interactID, Player player) {
+		Log.d("log","INTERACT!");
+		if (interactID == 1) {
+			player.receiveGlasses();
+		} else if (interactID == 2) {
+			endGame = true;
+		}
+	}
+
+	public void activateGlasses() {
+		for (GameObject obj:gameObjects) {
+			if (!obj.visible) {
+				obj.visible = true;
+			}
+		}
+	}
+
+	public void restart() {
+		currentScreen = GameScreen.SCN_FIELD;
+		setScreen(currentScreen);
 	}
 }

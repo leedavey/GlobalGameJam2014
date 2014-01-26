@@ -11,18 +11,22 @@ public class Player {
 
 	private float walkSpeed = 3f;
 	private Bitmap playerBmp;
+	private Bitmap glassesBmp;
 	private Vector2 characterPos;
 	private Vector2 moveTo;
 	private int frame = 0;
 	private int frameRow = 2;
 	private int frameTime = 0;
 	private int frameLimit = 10;
+	private boolean glasses = false;
 
 	public Player(Context context) {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inScaled = false;
 		playerBmp = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.gb_walk2, opts);
+		glassesBmp = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.glasses, opts);
 		moveTo = new Vector2(20,40);
 		characterPos = new Vector2(200,400);
 	}
@@ -47,6 +51,10 @@ public class Player {
 				new Rect(sizeX*frame,sizeY*frameRow,(sizeX*frame)+sizeX,(sizeY*frameRow)+sizeY),
 				new Rect(cX-(ssizeX/2),cY-ssizeY,cX+(ssizeX/2),cY),
 				null);
+		if (glasses == true) {
+			canvas.drawBitmap(glassesBmp, new Rect(0,0,glassesBmp.getWidth(),glassesBmp.getHeight()),
+					new Rect((int)(900*scaleX),(int)(25*scaleY),(int)(1000*scaleX),(int)(75*scaleY)), null);
+		}
 	}
 
 	public void setPosition(int x, int y) {
@@ -58,7 +66,9 @@ public class Player {
 	}
 
 	public void update(GameScreen gameScreen) {
+		// TODO: Need refactoring on the bounds check, don't know how yet.
 		if (characterPos.x < gameScreen.boundW) {
+			Log.d("log","out of bounds W");
 			if (gameScreen.nextW != 0) {
 				gameScreen.setScreen(gameScreen.nextW);
 				setCharacterPosition(90, characterPos.y/10);
@@ -68,6 +78,7 @@ public class Player {
 			}
 		}
 		if (characterPos.x > gameScreen.boundE) {
+			Log.d("log","out of bounds E");
 			if (gameScreen.nextE != 0) {
 				gameScreen.setScreen(gameScreen.nextE);
 				setCharacterPosition(10, characterPos.y/10);
@@ -78,8 +89,11 @@ public class Player {
 		}
 		if (characterPos.y > gameScreen.boundS) {
 			if (gameScreen.nextS != 0) {
+				if (gameScreen.nextS == GameScreen.SCN_WATERFALL)
+					setCharacterPosition(73, 21);
+				else
+					setCharacterPosition(characterPos.x/10, 10);
 				gameScreen.setScreen(gameScreen.nextS);
-				setCharacterPosition(characterPos.y/10, 10);
 			} else {
 				characterPos.y = gameScreen.boundS;
 				stopMovement();
@@ -141,7 +155,7 @@ public class Player {
 
 	// using game coords, set the character position and
 	// the move to coords
-	private void setCharacterPosition(int x, int y) {
+	public void setCharacterPosition(int x, int y) {
 		moveTo.x = x;
 		moveTo.y = y;		
 		characterPos.x = moveTo.x*10;
@@ -157,5 +171,17 @@ public class Player {
 
 	public Vector2 getPosition() {
 		return characterPos;
+	}
+
+	public void receiveGlasses() {
+		this.glasses = true;
+	}
+
+	public void removeGlasses() {
+		this.glasses = false;
+	}
+
+	public boolean hasGlasses() {
+		return glasses;
 	}
 }

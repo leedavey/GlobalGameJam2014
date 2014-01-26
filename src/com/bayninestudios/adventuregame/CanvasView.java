@@ -16,6 +16,7 @@ public class CanvasView extends View {
 
 	private final int GAME_SIZE_X = 1000;
 	private final int GAME_SIZE_Y = 600;
+	private boolean debug = false;
 	private int screen_size_x;
 	private int screen_size_y;
 	private float scaleX;
@@ -47,12 +48,17 @@ public class CanvasView extends View {
 		gameScreen.drawObjects(canvas, true, scaleX, scaleY, player.getPosition().y/10);
 		player.drawCharacter(canvas, scaleX, scaleY);
 		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
-		drawMenu(canvas);
+//		drawMenu(canvas);
 //		drawPopupText(canvas);
 		if (showPassable)
 			gameScreen.drawPassable(canvas, scaleX, scaleY);
-		drawDebug(canvas);
+		if (debug) {
+			drawDebug(canvas);
+		}
 		// draw text popup
+		if (gameScreen.endGame) {
+			drawEndGame(canvas, scaleX, scaleY);
+		}
 		this.invalidate();
 	}
 
@@ -70,18 +76,26 @@ public class CanvasView extends View {
 		canvas.drawText(text, 500, 30, paint);
 	}
 
-	private void drawPopupText(Canvas canvas) {
+	private void drawEndGame(Canvas canvas, float scaleX, float scaleY) {
 		// every draw needs to be scaled
 		Paint paint1 = new Paint();
 		paint1.setColor(Color.WHITE);
-		canvas.drawRoundRect(new RectF(500f,100f,800f,300f), 10f, 10f, paint1);
+		canvas.drawRoundRect(new RectF(300f*scaleX,100f*scaleY,700f*scaleX,300f*scaleY), 10f, 10f, paint1);
 		paint1.setColor(Color.BLACK);
-		canvas.drawRoundRect(new RectF(505f,105f,795f,295f), 10f, 10f, paint1);
+		canvas.drawRoundRect(new RectF(305f*scaleX,105f*scaleY,695f*scaleX,295f*scaleY), 10f, 10f, paint1);
+		paint1.setColor(Color.LTGRAY);
+		canvas.drawRoundRect(new RectF(420f*scaleX,220f*scaleY,580f*scaleX,270f*scaleY), 10f, 10f, paint1);
 		Paint paint = new Paint();
 		paint.setColor(Color.GREEN);
 		paint.setTextSize(30);
-		String text = "Hello World!\nNew Line";
-		canvas.drawText(text, 515, 200, paint);
+		String text1 = "Congratulations!";
+		canvas.drawText(text1, 330*scaleX, 150*scaleY, paint);
+		String text2 = "You got the scepter!";
+		canvas.drawText(text2, 330*scaleX, 180*scaleY, paint);
+		paint.setColor(Color.BLACK);
+		String text3 = "Restart";		
+		canvas.drawText(text3, 450*scaleX, 255*scaleY, paint);
+		
 	}
 
 	@Override
@@ -89,13 +103,44 @@ public class CanvasView extends View {
 	    float x = e.getX();
 	    float y = e.getY();
 	    if (e.getAction() == MotionEvent.ACTION_UP) {
-		    // calculate tile touched
-		    int tileX = (int)(x / scaleX)/10;
-		    int tileY = (int)(y / scaleY)/10;
-		    if ((tileX < 5) && (tileY < 5))
-		    	showPassable = !showPassable;
-		    else
-			    player.setMoveTo(tileX, tileY);
+	    	if (!gameScreen.endGame) {
+		    	// check for a game object that is interactable first
+		    	int interactID = gameScreen.interactCheck((int)(x/scaleX),(int)(y/scaleY), player.getPosition());
+		    	if (interactID == 0) {
+		    		// player wants to move
+		    		// calculate tile touched
+				    int tileX = (int)(x / scaleX)/10;
+				    int tileY = (int)(y / scaleY)/10;
+	
+				    boolean shouldMove = true;
+				    if ((tileX < 6) && (tileY < 6)) {
+					    if (debug == true) {
+					    	showPassable = !showPassable;
+					    	shouldMove = false;
+					    }
+				    }
+				    if ((tileX > 90) && (tileY < 10)) {
+				    	if (player.hasGlasses()) {
+					    	gameScreen.activateGlasses();
+					    	shouldMove = false;
+				    	}
+				    }
+					if (shouldMove)
+					    player.setMoveTo(tileX, tileY);
+		    	} else {
+		    		// player wants to interact with the world
+		    		gameScreen.playerInteract(interactID, player);
+		    	}
+	    	} else {
+	    		int tileX = (int)(x / scaleX)/10;
+			    int tileY = (int)(y / scaleY)/10;
+			    if ((tileX>42)&&(tileX<58)&&(tileY>20)&&(tileY<29)) {
+			    	gameScreen.restart();
+			    	player.removeGlasses();
+			    	player.setCharacterPosition(20, 40);
+			    	gameScreen.endGame = false;
+			    }
+			}
 	    }
 	    return true;
 	}
