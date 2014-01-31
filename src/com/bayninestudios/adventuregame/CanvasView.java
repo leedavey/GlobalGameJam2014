@@ -14,8 +14,9 @@ import android.view.View;
 
 public class CanvasView extends View {
 
-	private final int GAME_SIZE_X = 1000;
-	private final int GAME_SIZE_Y = 600;
+	public static final int GAME_SIZE_X = 1000;
+	public static final int GAME_SIZE_Y = 600;
+
 	private boolean debug = false;
 	private int screen_size_x;
 	private int screen_size_y;
@@ -25,23 +26,27 @@ public class CanvasView extends View {
 	private Player player;
 	private GameScreen gameScreen;
 	private boolean showPassable = false;
+	private CanvasHelper canvasHelper;
+	private TouchFeedback touchFeedback;
 	
 	public CanvasView(Context context) {
 		super(context);
 		player = new Player(context);
 		gameScreen = new GameScreen(context);
-
+		canvasHelper = new CanvasHelper();
+		touchFeedback = new TouchFeedback(context);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		canvasHelper.setCanvas(canvas);
 		screen_size_x = canvas.getWidth();
 		screen_size_y = canvas.getHeight();
 		scaleX = screen_size_x/(GAME_SIZE_X*1f);
 		scaleY = screen_size_y/(GAME_SIZE_Y*1f);
 
-		gameScreen.drawBackground(canvas, scaleX, scaleY);
+		gameScreen.drawBackground(canvasHelper);
 		Paint paint = new Paint();
 		paint.setColor(Color.WHITE);
 		player.update(gameScreen);
@@ -55,6 +60,7 @@ public class CanvasView extends View {
 		if (debug) {
 			drawDebug(canvas);
 		}
+		touchFeedback.draw(canvasHelper);
 		// draw text popup
 		if (gameScreen.endGame) {
 			drawEndGame(canvas, scaleX, scaleY);
@@ -103,6 +109,7 @@ public class CanvasView extends View {
 	    float x = e.getX();
 	    float y = e.getY();
 	    if (e.getAction() == MotionEvent.ACTION_UP) {
+	    	touchFeedback.addTouchEvent((int)(x/scaleX), (int)(y/scaleY));
 	    	if (!gameScreen.endGame) {
 		    	// check for a game object that is interactable first
 		    	int interactID = gameScreen.interactCheck((int)(x/scaleX),(int)(y/scaleY), player.getPosition());

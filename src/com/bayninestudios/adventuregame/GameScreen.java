@@ -86,10 +86,10 @@ public class GameScreen {
 		}
 	}
 	
-	public void drawBackground(Canvas canvas, float scaleX, float scaleY) {
-		canvas.drawBitmap(gameObjectBmps.get(currentBackground),
+	public void drawBackground(CanvasHelper canvasHelper) {
+		canvasHelper.drawBitmap(gameObjectBmps.get(currentBackground),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y),
-				new Rect(0,0,(int)(GAME_SIZE_X*scaleX),(int)(GAME_SIZE_Y*scaleY)), null);
+				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y));
 	}
 
 	public void drawPassable(Canvas canvas, float scaleX, float scaleY) {
@@ -108,6 +108,7 @@ public class GameScreen {
 		}
 	}
 
+	// move this code to the game object class
 	public void drawObjects(Canvas canvas, boolean background, float scaleX, float scaleY, int playerY) {
 		for (GameObject obj:gameObjects) {
 			if (obj.visible) {
