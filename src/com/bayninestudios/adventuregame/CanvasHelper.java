@@ -8,9 +8,9 @@ import android.graphics.RectF;
 
 public class CanvasHelper {
 
-	private Canvas canvas;
-	private float scaleX;
-	private float scaleY;
+	public Canvas canvas;
+	public float scaleX;
+	public float scaleY;
 
 	public CanvasHelper() {
 	}

@@ -24,7 +24,7 @@ public class GameScreen {
 	private int passable[][] = new int[100][64];
 	private ArrayList<Bitmap> gameObjectBmps;
 	private ArrayList<GameObject> gameObjects;
-//	private SparkleEffect sparkle;
+	private SparkleEffect sparkle;
 	private int currentBackground;
 	private int currentScreen = GameScreen.SCN_FIELD;
 	
@@ -75,6 +75,7 @@ public class GameScreen {
 		gameObjectBmps.add(BitmapFactory.decodeResource(context.getResources(), // 13
                 R.drawable.chest, opts));
 
+		sparkle = new SparkleEffect(new Rect(0,530,1000,600), Color.WHITE, 10);
 		setScreen(currentScreen);
 	}
 
@@ -90,6 +91,7 @@ public class GameScreen {
 		canvasHelper.drawBitmap(gameObjectBmps.get(currentBackground),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y));
+		sparkle.draw(canvasHelper);
 	}
 
 	public void drawPassable(Canvas canvas, float scaleX, float scaleY) {
