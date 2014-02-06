@@ -17,7 +17,7 @@ public class CanvasView extends View {
 	public static final int GAME_SIZE_X = 1000;
 	public static final int GAME_SIZE_Y = 600;
 
-	private boolean debug = false;
+	private boolean debug = true;
 	private int screen_size_x;
 	private int screen_size_y;
 	private float scaleX;
@@ -41,20 +41,19 @@ public class CanvasView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		canvasHelper.setCanvas(canvas);
+
+		// TODO remove these and replace with canvasHelper
 		screen_size_x = canvas.getWidth();
 		screen_size_y = canvas.getHeight();
 		scaleX = screen_size_x/(GAME_SIZE_X*1f);
 		scaleY = screen_size_y/(GAME_SIZE_Y*1f);
 
 		gameScreen.drawBackground(canvasHelper);
-		Paint paint = new Paint();
-		paint.setColor(Color.WHITE);
 		player.update(gameScreen);
 		gameScreen.drawObjects(canvas, true, scaleX, scaleY, player.getPosition().y/10);
 		player.drawCharacter(canvas, scaleX, scaleY);
 		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
-//		drawMenu(canvas);
-//		drawPopupText(canvas);
+		gameScreen.drawPopup(canvasHelper);
 		if (showPassable)
 			gameScreen.drawPassable(canvas, scaleX, scaleY);
 		if (debug) {
@@ -68,12 +67,6 @@ public class CanvasView extends View {
 		this.invalidate();
 	}
 
-	private void drawMenu(Canvas canvas) {
-		Paint paint = new Paint();
-		paint.setColor(Color.GRAY);
-		canvas.drawRoundRect(new RectF(0f,0f,50f*scaleX,50f*scaleY), 10f, 10f, paint);
-	}
-
 	private void drawDebug(Canvas canvas) {
 		Paint paint = new Paint();
 		paint.setColor(Color.WHITE);
@@ -82,6 +75,7 @@ public class CanvasView extends View {
 		canvas.drawText(text, 500, 30, paint);
 	}
 
+	// TODO: get rid of this hack
 	private void drawEndGame(Canvas canvas, float scaleX, float scaleY) {
 		// every draw needs to be scaled
 		Paint paint1 = new Paint();

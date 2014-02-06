@@ -53,4 +53,8 @@ public class CanvasHelper {
 				destRect.right * scaleX, destRect.bottom * scaleY);
 		canvas.drawBitmap(bmp, src, dst, paint);
 	}
+
+	public void drawRoundRect(RectF rectF, float f, float g, Paint paint) {
+		canvas.drawRoundRect(rectF, f, g, paint);
+	}
 }

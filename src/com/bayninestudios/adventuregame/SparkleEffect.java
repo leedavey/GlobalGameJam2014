@@ -3,24 +3,20 @@ package com.bayninestudios.adventuregame;
 import java.util.ArrayList;
 import java.util.Random;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class SparkleEffect {
-	
+
+	private final float SPARKLESIZE = 4;
 	private Rect area;
 	private int color;
 	private Random rand;
-	private int count;
 	private ArrayList<Sparkle> sparkles;
 
 	public SparkleEffect(Rect rect, int color, int count) {
 		area = rect;
 		this.color = color;
-		this.count = count;
 		rand = new Random(System.currentTimeMillis());
 		sparkles = new ArrayList<Sparkle>();
 		for (int i=0; i<count; i++) {
@@ -33,8 +29,8 @@ public class SparkleEffect {
 	public void draw(CanvasHelper canvas) {
 		Paint paint = new Paint();
 		paint.setColor(color);
-		int sizeX = (int)(4*canvas.scaleX);
-		int sizeY = (int)(4*canvas.scaleY);
+		int sizeX = (int)(SPARKLESIZE*canvas.scaleX);
+		int sizeY = (int)(SPARKLESIZE*canvas.scaleY);
 		for (Sparkle sparkle:sparkles) {
 			if (sparkle.fade > 0) {
 				paint.setAlpha(sparkle.fade);
