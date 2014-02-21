@@ -18,10 +18,6 @@ public class CanvasView extends View {
 	public static final int GAME_SIZE_Y = 600;
 
 	private boolean debug = true;
-	private int screen_size_x;
-	private int screen_size_y;
-	private float scaleX;
-	private float scaleY;
 
 	private Player player;
 	private GameScreen gameScreen;
@@ -47,23 +43,17 @@ public class CanvasView extends View {
 		super.onDraw(canvas);
 		canvasHelper.setCanvas(canvas);
 
-		// TODO remove these and replace with canvasHelper
-		screen_size_x = canvas.getWidth();
-		screen_size_y = canvas.getHeight();
-		scaleX = screen_size_x/(GAME_SIZE_X*1f);
-		scaleY = screen_size_y/(GAME_SIZE_Y*1f);
-
 		gameScreen.drawBackground(canvasHelper);
 		player.update(gameScreen);
-		gameScreen.drawObjects(canvas, true, scaleX, scaleY, player.getPosition().y/10);
-		player.drawCharacter(canvas, scaleX, scaleY);
-		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
+		gameScreen.drawObjects(canvas, true, canvasHelper.scaleX, canvasHelper.scaleY, player.getPosition().y/10);
+		player.drawCharacter(canvas, canvasHelper.scaleX, canvasHelper.scaleY);
+		gameScreen.drawObjects(canvas, false, canvasHelper.scaleX, canvasHelper.scaleY, player.getPosition().y/10);
 		if (popup.showing) {
 			popup.draw(canvasHelper);
 		}
 
 		if (showPassable)
-			gameScreen.drawPassable(canvas, scaleX, scaleY);
+			gameScreen.drawPassable(canvas, canvasHelper.scaleX, canvasHelper.scaleY);
 		if (debug) {
 			drawDebug(canvas);
 		}
@@ -86,11 +76,11 @@ public class CanvasView extends View {
 	    float y = e.getY();
 	    if (e.getAction() == MotionEvent.ACTION_UP) {
 	    	// show touch
-	    	touchFeedback.addTouchEvent((int)(x/scaleX), (int)(y/scaleY));
+	    	touchFeedback.addTouchEvent((int)(x/canvasHelper.scaleX), (int)(y/canvasHelper.scaleY));
 
 	    	// calculate tile touched
-    		int tileX = (int)(x / scaleX)/10;
-		    int tileY = (int)(y / scaleY)/10;
+    		int tileX = (int)(x / canvasHelper.scaleX)/10;
+		    int tileY = (int)(y / canvasHelper.scaleY)/10;
 
 		    // popup showing, don't move
 	    	if (popup.showing) {
@@ -108,7 +98,7 @@ public class CanvasView extends View {
 			    }
 	    	} else {
 		    	// check for a game object that is interactable first
-		    	int interactID = gameScreen.interactCheck((int)(x/scaleX),(int)(y/scaleY), player.getPosition());
+		    	int interactID = gameScreen.interactCheck((int)(x/canvasHelper.scaleX),(int)(y/canvasHelper.scaleY), player.getPosition());
 		    	if (interactID == 0) {
 		    		// player wants to move
 				    boolean shouldMove = true;
@@ -141,7 +131,7 @@ public class CanvasView extends View {
 			popup.displayPopup("You receive glasses!");
 		} else if (interactID == 2) {
 			endGame = true;
-			popup.showing = true;
+			popup.displayPopup("You found the Scepter!");
 		}
 	}
 }
