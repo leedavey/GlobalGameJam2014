@@ -27,7 +27,6 @@ public class GameScreen {
 	private SparkleEffect sparkle;
 	private int currentBackground;
 	private int currentScreen = GameScreen.SCN_FIELD;
-	private PopupMessage popup;
 	
 	// these need refactoring, don't know how yet
 	public int boundW;
@@ -39,8 +38,6 @@ public class GameScreen {
 	public int boundS;
 	public int nextS;
 	
-	public boolean endGame = false;
-
 	public GameScreen(Context context) {
 		gameObjectBmps = new ArrayList<Bitmap>();
 
@@ -78,8 +75,6 @@ public class GameScreen {
 
 		sparkle = new SparkleEffect(new Rect(0,530,1000,600), Color.WHITE, 10);
 		setScreen(currentScreen);
-		popup = new PopupMessage();
-		popup.showing = true;
 	}
 
 	private void setPassableSquare(int x1, int y1, int x2, int y2) {
@@ -310,15 +305,6 @@ public class GameScreen {
 		return returnVal;
 	}
 
-	public void playerInteract(int interactID, Player player) {
-		Log.d("log","INTERACT!");
-		if (interactID == 1) {
-			player.receiveGlasses();
-		} else if (interactID == 2) {
-			endGame = true;
-		}
-	}
-
 	public void activateGlasses() {
 		for (GameObject obj:gameObjects) {
 			if (!obj.visible) {
@@ -330,11 +316,5 @@ public class GameScreen {
 	public void restart() {
 		currentScreen = GameScreen.SCN_FIELD;
 		setScreen(currentScreen);
-	}
-
-	public void drawPopup(CanvasHelper canvasHelper) {
-		if (popup.showing) {
-			popup.draw(canvasHelper);
-		}
 	}
 }

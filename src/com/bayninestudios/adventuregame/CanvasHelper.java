@@ -55,6 +55,11 @@ public class CanvasHelper {
 	}
 
 	public void drawRoundRect(RectF rectF, float f, float g, Paint paint) {
-		canvas.drawRoundRect(rectF, f, g, paint);
+		RectF scaledRect = new RectF(rectF.left*scaleX, rectF.top*scaleY, rectF.right*scaleX, rectF.bottom*scaleY);
+		canvas.drawRoundRect(scaledRect, f, g, paint);
+	}
+
+	public void drawText(String text, int x, int y, Paint paint) {
+		canvas.drawText(text, x*scaleX, y*scaleY, paint);
 	}
 }

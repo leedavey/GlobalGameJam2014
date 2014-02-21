@@ -28,13 +28,18 @@ public class CanvasView extends View {
 	private boolean showPassable = false;
 	private CanvasHelper canvasHelper;
 	private TouchFeedback touchFeedback;
+	private PopupMessage popup;
 	
+	public boolean endGame = false;
+
 	public CanvasView(Context context) {
 		super(context);
 		player = new Player(context);
 		gameScreen = new GameScreen(context);
 		canvasHelper = new CanvasHelper();
 		touchFeedback = new TouchFeedback(context);
+		popup = new PopupMessage();
+		popup.displayPopup("Welcome!");
 	}
 
 	@Override
@@ -53,17 +58,17 @@ public class CanvasView extends View {
 		gameScreen.drawObjects(canvas, true, scaleX, scaleY, player.getPosition().y/10);
 		player.drawCharacter(canvas, scaleX, scaleY);
 		gameScreen.drawObjects(canvas, false, scaleX, scaleY, player.getPosition().y/10);
-		gameScreen.drawPopup(canvasHelper);
+		if (popup.showing) {
+			popup.draw(canvasHelper);
+		}
+
 		if (showPassable)
 			gameScreen.drawPassable(canvas, scaleX, scaleY);
 		if (debug) {
 			drawDebug(canvas);
 		}
 		touchFeedback.draw(canvasHelper);
-		// draw text popup
-		if (gameScreen.endGame) {
-			drawEndGame(canvas, scaleX, scaleY);
-		}
+
 		this.invalidate();
 	}
 
@@ -75,44 +80,37 @@ public class CanvasView extends View {
 		canvas.drawText(text, 500, 30, paint);
 	}
 
-	// TODO: get rid of this hack
-	private void drawEndGame(Canvas canvas, float scaleX, float scaleY) {
-		// every draw needs to be scaled
-		Paint paint1 = new Paint();
-		paint1.setColor(Color.WHITE);
-		canvas.drawRoundRect(new RectF(300f*scaleX,100f*scaleY,700f*scaleX,300f*scaleY), 10f, 10f, paint1);
-		paint1.setColor(Color.BLACK);
-		canvas.drawRoundRect(new RectF(305f*scaleX,105f*scaleY,695f*scaleX,295f*scaleY), 10f, 10f, paint1);
-		paint1.setColor(Color.LTGRAY);
-		canvas.drawRoundRect(new RectF(420f*scaleX,220f*scaleY,580f*scaleX,270f*scaleY), 10f, 10f, paint1);
-		Paint paint = new Paint();
-		paint.setColor(Color.GREEN);
-		paint.setTextSize(30);
-		String text1 = "Congratulations!";
-		canvas.drawText(text1, 330*scaleX, 150*scaleY, paint);
-		String text2 = "You got the scepter!";
-		canvas.drawText(text2, 330*scaleX, 180*scaleY, paint);
-		paint.setColor(Color.BLACK);
-		String text3 = "Restart";		
-		canvas.drawText(text3, 450*scaleX, 255*scaleY, paint);
-		
-	}
-
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
 	    float x = e.getX();
 	    float y = e.getY();
 	    if (e.getAction() == MotionEvent.ACTION_UP) {
+	    	// show touch
 	    	touchFeedback.addTouchEvent((int)(x/scaleX), (int)(y/scaleY));
-	    	if (!gameScreen.endGame) {
+
+	    	// calculate tile touched
+    		int tileX = (int)(x / scaleX)/10;
+		    int tileY = (int)(y / scaleY)/10;
+
+		    // popup showing, don't move
+	    	if (popup.showing) {
+	    		// send the touch event to the popup instead
+	    		// it may return some kind of interact event
+	    		// process that after
+			    if ((tileX>42)&&(tileX<58)&&(tileY>20)&&(tileY<29)) {
+			    	popup.showing = false;
+			    	if (endGame) {
+				    	gameScreen.restart();
+				    	player.removeGlasses();
+				    	player.setCharacterPosition(20, 40);
+				    	endGame = false;
+				    }
+			    }
+	    	} else {
 		    	// check for a game object that is interactable first
 		    	int interactID = gameScreen.interactCheck((int)(x/scaleX),(int)(y/scaleY), player.getPosition());
 		    	if (interactID == 0) {
 		    		// player wants to move
-		    		// calculate tile touched
-				    int tileX = (int)(x / scaleX)/10;
-				    int tileY = (int)(y / scaleY)/10;
-	
 				    boolean shouldMove = true;
 				    if ((tileX < 6) && (tileY < 6)) {
 					    if (debug == true) {
@@ -130,19 +128,20 @@ public class CanvasView extends View {
 					    player.setMoveTo(tileX, tileY);
 		    	} else {
 		    		// player wants to interact with the world
-		    		gameScreen.playerInteract(interactID, player);
+		    		playerInteract(interactID, player);
 		    	}
-	    	} else {
-	    		int tileX = (int)(x / scaleX)/10;
-			    int tileY = (int)(y / scaleY)/10;
-			    if ((tileX>42)&&(tileX<58)&&(tileY>20)&&(tileY<29)) {
-			    	gameScreen.restart();
-			    	player.removeGlasses();
-			    	player.setCharacterPosition(20, 40);
-			    	gameScreen.endGame = false;
-			    }
 			}
 	    }
 	    return true;
+	}
+
+	private void playerInteract(int interactID, Player player) {
+		if (interactID == 1) {
+			player.receiveGlasses();
+			popup.displayPopup("You receive glasses!");
+		} else if (interactID == 2) {
+			endGame = true;
+			popup.showing = true;
+		}
 	}
 }
