@@ -13,6 +13,7 @@ public class SparkleEffect {
 	private int color;
 	private Random rand;
 	private ArrayList<Sparkle> sparkles;
+	public boolean active;
 
 	public SparkleEffect(Rect rect, int color, int count) {
 		area = rect;
@@ -24,8 +25,16 @@ public class SparkleEffect {
 					rand.nextInt(area.width())+area.left,
 					rand.nextInt(area.height())+area.top));
 		}
+		active = false;
 	}
 	
+	public void setArea(int x1, int y1, int x2, int y2) {
+		area.left = x1;
+		area.right = x2;
+		area.top = y1;
+		area.bottom = y2;
+	}
+
 	public void draw(CanvasHelper canvas) {
 		Paint paint = new Paint();
 		paint.setColor(color);

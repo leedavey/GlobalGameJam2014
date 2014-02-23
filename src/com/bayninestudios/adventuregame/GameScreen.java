@@ -89,7 +89,8 @@ public class GameScreen {
 		canvasHelper.drawBitmap(gameObjectBmps.get(currentBackground),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y),
 				new Rect(0,0,GAME_SIZE_X,GAME_SIZE_Y));
-		sparkle.draw(canvasHelper);
+		if (sparkle.active)
+			sparkle.draw(canvasHelper);
 	}
 
 	public void drawPassable(Canvas canvas, float scaleX, float scaleY) {
@@ -138,6 +139,8 @@ public class GameScreen {
 		Random rand = new Random();
 		if (screen == GameScreen.SCN_FIELD) {
 			currentBackground = 0;
+			sparkle = new SparkleEffect(new Rect(0,530,1000,600), Color.WHITE, 10);
+			sparkle.active = true;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(78,13,8));
 			gameObjects.add(new GameObject(90,16,6));
@@ -180,6 +183,8 @@ public class GameScreen {
 //			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.WHITE, 1);
 		} else if (screen == GameScreen.SCN_WATERFALL) {
 			currentBackground = 7;
+			sparkle = new SparkleEffect(new Rect(220,530,1000,600), Color.WHITE, 10);
+			sparkle.active = true;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(61,21,6));
 			gameObjects.add(new GameObject(29,50,10,false,false,0));
@@ -192,9 +197,9 @@ public class GameScreen {
 			setPassableSquare(76, 18, 100, 19);
 
 			setPassableSquare(27, 18, 28, 25);
-			setPassableSquare(26, 25, 27, 30);
-			setPassableSquare(25, 30, 26, 35);
-			setPassableSquare(24, 35, 25, 40);
+			setPassableSquare(26, 24, 27, 30);
+			setPassableSquare(25, 29, 26, 35);
+			setPassableSquare(24, 34, 25, 40);
 			// river
 //			setPassableSquare(50, RIVER_TOP, 100, RIVER_TOP+1);
 			setPassableSquare(24, 40, 54, 41);
@@ -206,6 +211,7 @@ public class GameScreen {
 //			sparkle = new SparkleEffect(new Rect(0,550,1000,600), Color.BLUE, 0);
 		} else if (screen == GameScreen.SCN_CAVE_ENTRANCE) {
 			currentBackground = 9;
+			sparkle.active = false;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(63,28,13,true,false,2));
 
@@ -230,23 +236,25 @@ public class GameScreen {
 			setNextScene(0,0,0,GameScreen.SCN_WATERFALL);
 			
 		} else if (screen == GameScreen.SCN_STUMP) {
-			Log.d("log","in here");
 			currentBackground = 11;
+			sparkle = new SparkleEffect(new Rect(0,530,1000,600), Color.WHITE, 10);
+			sparkle.active = true;
 			gameObjects = new ArrayList<GameObject>();
 			gameObjects.add(new GameObject(45,35,5,true,true,1));
+			gameObjects.add(new GameObject(20,30,8,false,false,0));
 
 			passable = new int[GAME_SIZE_X][GAME_SIZE_Y];
 			// stump
 			setPassableSquare(39, 32, 53, 36);
 
 			setPassableSquare(69, 16, 70, 23);
-			setPassableSquare(70, 23, 71, 28);
-			setPassableSquare(71, 28, 72, 33);
-			setPassableSquare(72, 33, 73, 37);
-			setPassableSquare(73, 37, 75, 38);
-			setPassableSquare(74, 37, 75, 42);
-			setPassableSquare(75, 42, 76, 45);
-			setPassableSquare(76, 44, 77, 47);
+			setPassableSquare(70, 22, 71, 28);
+			setPassableSquare(71, 27, 72, 33);
+			setPassableSquare(72, 32, 73, 37);
+			setPassableSquare(73, 36, 75, 38);
+			setPassableSquare(74, 36, 75, 42);
+			setPassableSquare(75, 41, 76, 45);
+			setPassableSquare(76, 43, 77, 47);
 			setPassableSquare(77, 46, 78, 56);
 
 			setBounds(90, 910, 190, 570);

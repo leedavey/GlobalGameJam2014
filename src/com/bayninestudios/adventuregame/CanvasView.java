@@ -17,7 +17,7 @@ public class CanvasView extends View {
 	public static final int GAME_SIZE_X = 1000;
 	public static final int GAME_SIZE_Y = 600;
 
-	private boolean debug = true;
+	private boolean debug = false;
 
 	private Player player;
 	private GameScreen gameScreen;
@@ -35,7 +35,7 @@ public class CanvasView extends View {
 		canvasHelper = new CanvasHelper();
 		touchFeedback = new TouchFeedback(context);
 		popup = new PopupMessage();
-		popup.displayPopup("Welcome!");
+		popup.displayPopup("Thank you for trying my Global","Game Jam 2014 entry","Start");
 	}
 
 	@Override
@@ -128,10 +128,10 @@ public class CanvasView extends View {
 	private void playerInteract(int interactID, Player player) {
 		if (interactID == 1) {
 			player.receiveGlasses();
-			popup.displayPopup("You receive glasses!");
+			popup.displayPopup("You receive glasses! Click the","icon on the top right to use","Ok");
 		} else if (interactID == 2) {
 			endGame = true;
-			popup.displayPopup("You found the Scepter!");
+			popup.displayPopup("You found the Scepter!","Congrats! Thanks for playing","Restart");
 		}
 	}
 }
